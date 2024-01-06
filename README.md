@@ -9,9 +9,25 @@ HuggingFace community scripts reworked, modified, etc.
 
 ### Why Anaconda?
 
-The major disadvantage to Anaconda is that many times the packages on its repos are outdated compared to present Pip versions. This leads many developers to prefer `Pipenv`. However, in this case, managing PyTorch against multiple platforms is a major pain if you've ever tried to manage it. And Anaconda handles PyTorch seemlessly. For all Pip dependencies, Poetry handles the rest, which gives us the best of all worlds.
+The major disadvantage to Anaconda is that many times the packages on its repos are outdated compared to present Pip versions. This leads many developers to prefer Pipenv or Poetry. However, in this case, managing PyTorch against multiple platforms is a major pain if you've ever tried to manage it with Poetry. And Anaconda handles PyTorch seamlessly. For all Pip dependencies, Poetry handles the rest, which gives us the best of all worlds!
 
-### Windows
+### Windows 10
+
+Install the latest available NVIDIA driver, then run `nvidia-smi` and verify the supported CUDA version is equal to or greater than the highest requirement!
+
+Install the following:
+
+- [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+    - Check "Desktop development with C++!"
+    - Be sure to select the latest respective Windows SDK version to match your OS.
+- [NVIDIA CUDA Toolkit 12.1](https://developer.nvidia.com/cuda-toolkit-archive)
+    - Or the latest version supported by [PyTorch](https://pytorch.org/get-started/locally/)!
+    - Select "Custom" install, and uncheck everything but the CUDA runtime, development, and documentation sections.
+- [NVIDIA CUDANN 12.x](https://developer.nvidia.com/cudnn)
+    - Will need an NVIDIA developer account!
+    - Be sure to get the version that supports the correct toolkit.
+    - Follow the official [install guide](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#install-windows) so CUDA Toolkit updates don't break CUDANN.
+    - Make the target install path `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDANN\12.x`.
 
 ```
 # Other popular buckets: versions, java
@@ -23,6 +39,8 @@ conda create --name hf --file conda-win-64.lock
 conda install -c conda-forge cudatoolkit=11.8.0 cudnn=8.8.0.121
 poetry install
 ```
+
+If there are still any errors encountered from managing CUDA 11.8, download Purfview's [CUDA 11.x binaries (v3)](https://github.com/Purfview/whisper-standalone-win/releases/tag/libs) and place them at: `C:\Users\{user}\scoop\apps\miniconda3\current\envs\hf\bin`.
 
 ### Linux
 
