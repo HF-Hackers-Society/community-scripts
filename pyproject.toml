@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "hf-community-scripts"
+version = "0.0.1"
+description = "HuggingFace community scripts reworked, modified, etc."
+authors = ["T145"]
+license = "agpl-3.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.10"
+conda-lock = "^2.5.1"
+# https://stackoverflow.com/questions/74949556/poetry-fails-to-install-tensorflow
+tensorflow-io-gcs-filesystem = "0.27.0"
+tensorflow = "2.10.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
