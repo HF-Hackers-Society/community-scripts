@@ -1,7 +1,9 @@
+# https://stackoverflow.com/questions/70851048/does-it-make-sense-to-use-conda-poetry
 name: hf
 # PyTorch: CUDA 12.1
 # Tensorflow: CUDA 11.8
 channels:
+  - nvidia # Need this high so we don't get CPU PyTorch
   - pytorch
   - conda-forge
   # We want to have a reproducible setup, so we don't want default channels,
@@ -12,8 +14,8 @@ dependencies:
   - python=3.10.*
   - mamba
   - pip  # pip must be mentioned explicitly, or conda-lock will fail
-  - poetry=1.*
-  #- cudatoolkit=11.8.0
+  - poetry
+  #- nvidia::cudatoolkit # locking w/ nvidia=11.5 works, but we want 11.8 so just install that manually
   #- cudnn=8.8.0.121
   #- tensorflow=2.10.0
   - pytorch::pytorch=2.1.2

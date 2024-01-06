@@ -7,6 +7,16 @@ HuggingFace community scripts reworked, modified, etc.
 
 ## Setup
 
+### Updating
+
+```
+conda-lock -k explicit --conda mamba
+# Update Conda packages based on re-generated lock file
+mamba update --file conda-linux-64.lock
+# Update Poetry packages and re-generate poetry.lock
+poetry update
+```
+
 ### Why Anaconda?
 
 The major disadvantage to Anaconda is that many times the packages on its repos are outdated compared to present Pip versions. This leads many developers to prefer Pipenv or Poetry. However, in this case, managing PyTorch against multiple platforms is a major pain if you've ever tried to manage it with Poetry. And Anaconda handles PyTorch seamlessly. For all Pip dependencies, Poetry handles the rest, which gives us the best of all worlds!
@@ -35,16 +45,17 @@ scoop bucket add extras
 scoop install rust miniconda3
 conda config --set channel_priority strict
 conda update conda --all
-conda create --name hf --file conda-win-64.lock
-conda install -c conda-forge cudatoolkit=11.8.0 cudnn=8.8.0.121
-poetry install
+conda create -n hf --file conda-win-64.lock
+conda activate hf
+mamba install -c conda-forge cudatoolkit=11.8.0 cudnn=8.8.0.121
+poetry install --no-root
 ```
 
 If there are still any errors encountered from managing CUDA 11.8, download Purfview's [CUDA 11.x binaries (v3)](https://github.com/Purfview/whisper-standalone-win/releases/tag/libs) and place them at: `C:\Users\{user}\scoop\apps\miniconda3\current\envs\hf\bin`.
 
 ### Linux
 
-*Install drivers and such...*
+*Install drivers and cudatoolkit...*
 
 ```
 conda create --name hf --file conda-linux-64.lock
