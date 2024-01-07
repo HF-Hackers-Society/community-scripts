@@ -13,10 +13,12 @@ conda-lock = "^2.5.1"
 # https://stackoverflow.com/questions/74949556/poetry-fails-to-install-tensorflow
 tensorflow-io-gcs-filesystem = "0.27.0"
 tensorflow = "2.10.1"
+diffusers = {extras = ["torch"], version = "^0.25.0"}
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.4"
+pytest-sugar = "^0.9.7"
 
 [build-system]
 requires = ["poetry-core"]
@@ -24,7 +26,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -q"
+addopts = "-ra -q --disable-pytest-warnings"
 testpaths = [
     "tests",
 ]
