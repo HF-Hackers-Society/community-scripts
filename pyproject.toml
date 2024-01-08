@@ -24,11 +24,11 @@ ninja = "^1.11.1.1"
 sentencepiece = "^0.1.99" # https://colab.research.google.com/drive/1YORPWx4okIHXnjW7MSAidXN29mPVNT7F | https://pypi.org/project/sentencepiece/
 peft = "^0.7.1" # https://huggingface.co/docs/peft/install | https://huggingface.co/blog/peft
 scipy = "^1.11.4"
-# xformers = [ # Best solution since the Anaconda repo only has Linux versions
-#     {platform = "linux", url = "https://download.pytorch.org/whl/cu121/xformers-0.0.23.post1-cp310-cp310-manylinux2014_x86_64.whl"},
-#     {platform = "win64", url = "https://download.pytorch.org/whl/cu121/xformers-0.0.23.post1-cp310-cp310-win_amd64.whl"}
-# ]
 optimum = {extras = ["onnxruntime-gpu"], version = "^1.16.1"}
+#torchao = "^0.0.3"
+triton = {platform = "linux", version = "2.1.0"}
+xformers = {source = "pytorch", version = "0.0.23.post1"}
+# flash-attn = { git = "https://github.com/Dao-AILab/flash-attention.git", tag = "v2.4.2" }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.4"
@@ -40,14 +40,14 @@ poethepoet = "^0.24.4"
 
 
 # Futureproofing so Poetry devs don't screw up the project
-# [[tool.poetry.source]]
-# name = "pypi"
-# priority = "primary"
+[[tool.poetry.source]]
+name = "pypi"
+priority = "primary"
 
-# [[tool.poetry.source]]
-# name = "pytorch"
-# url = "https://download.pytorch.org/whl/cu121"
-# priority = "explicit"
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu121"
+priority = "supplemental"
 
 [build-system]
 requires = ["setuptools", "wheel", "poetry-core"]
