@@ -1,11 +1,16 @@
+# https://python-poetry.org/docs/pyproject/
 [tool.poetry]
 name = "hf-community-scripts"
 version = "0.0.1"
 description = "HuggingFace community scripts reworked, modified, etc."
 authors = ["T145"]
-license = "agpl-3.0"
+license = "AGPL-3.0-or-later"
 readme = "README.md"
 packages = [{include = "hf-community-scripts"}]
+exclude = ["docs"]
+
+[tool.poetry.extras]
+# List potential platform specifications
 
 [tool.poetry.dependencies]
 python = "~3.10"
@@ -14,14 +19,41 @@ conda-lock = "^2.5.1"
 tensorflow-io-gcs-filesystem = "0.27.0"
 tensorflow = "2.10.1"
 diffusers = {extras = ["torch"], version = "^0.25.0"}
+transformers = "^4.36.2"
+bitsandbytes = "^0.41.3.post2"
+ninja = "^1.11.1.1"
+# packaging = "^23.2"
+# flash-attn = "^2.4.2"
+sentencepiece = "^0.1.99" # https://colab.research.google.com/drive/1YORPWx4okIHXnjW7MSAidXN29mPVNT7F | https://pypi.org/project/sentencepiece/
+peft = "^0.7.1" # https://huggingface.co/docs/peft/install | https://huggingface.co/blog/peft
+scipy = "^1.11.4"
+# xformers = [ # Best solution since the Anaconda repo only has Linux versions
+#     {platform = "linux", url = "https://download.pytorch.org/whl/cu121/xformers-0.0.23.post1-cp310-cp310-manylinux2014_x86_64.whl"},
+#     {platform = "win64", url = "https://download.pytorch.org/whl/cu121/xformers-0.0.23.post1-cp310-cp310-win_amd64.whl"}
+# ]
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.4"
 pytest-sugar = "^0.9.7"
+pytest-cov = "^4.1.0"
+poethepoet = "^0.24.4"
+# nox = "^2023.4.22" # https://nox.thea.codes/en/stable/config.html
+# nox-poetry = "^1.0.3" # https://nox-poetry.readthedocs.io/en/stable/reference.html
+
+
+# Futureproofing so Poetry devs don't screw up the project
+# [[tool.poetry.source]]
+# name = "pypi"
+# priority = "primary"
+
+# [[tool.poetry.source]]
+# name = "pytorch"
+# url = "https://download.pytorch.org/whl/cu121"
+# priority = "explicit"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["setuptools", "wheel", "poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
@@ -30,3 +62,15 @@ addopts = "-ra -q --disable-pytest-warnings"
 testpaths = [
     "tests",
 ]
+
+# https://poethepoet.natn.io/global_options.html
+[tool.poe]
+verbosity = 1
+poetry_command = ""
+
+# [tool.poe.poetry_hooks]
+# post_install = "archive-build"
+
+# [tool.poe.tasks.install-flash-attn]
+# script = "python -m pip install flash-attn --no-build-isolation"
+# help   = "Installs Flash Attn 2 if it's not present on the system."

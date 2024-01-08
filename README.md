@@ -49,6 +49,8 @@ conda create -n hf --file conda-win-64.lock
 conda activate hf
 mamba install -c conda-forge cudatoolkit=11.8.0 cudnn=8.8.0.121
 poetry install
+accelerate config
+poe install-flash-attn
 ```
 
 If there are still any errors encountered from managing CUDA 11.8, download Purfview's [CUDA 11.x binaries (v3)](https://github.com/Purfview/whisper-standalone-win/releases/tag/libs) and place them at: `C:\Users\{user}\scoop\apps\miniconda3\current\envs\hf\bin`.
@@ -60,4 +62,10 @@ If there are still any errors encountered from managing CUDA 11.8, download Purf
 ```
 conda create --name hf --file conda-linux-64.lock
 poetry install
+accelerate config
+poe install-flash-attn
 ```
+
+## Reporting issues
+
+Attach the log from running `accelerate env`!

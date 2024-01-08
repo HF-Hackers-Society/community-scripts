@@ -3,7 +3,7 @@ name: hf
 # PyTorch: CUDA 12.1
 # Tensorflow: CUDA 11.8
 channels:
-  - nvidia # Need this high so we don't get CPU PyTorch
+  - nvidia # Need this high so we don't get CPU packages
   - pytorch
   - conda-forge
   # We want to have a reproducible setup, so we don't want default channels,
@@ -17,10 +17,10 @@ dependencies:
   - poetry
   #- nvidia::cudatoolkit # locking w/ nvidia=11.5 works, but we want 11.8 so just install that manually
   #- cudnn=8.8.0.121
-  #- tensorflow=2.10.0
   - pytorch::pytorch=2.1.2
   - pytorch::torchaudio=2.1.2
   - pytorch::torchvision=0.16.2
+  - conda-forge::lightning=2.1.3 # https://lightning.ai/docs/pytorch/stable/starter/introduction.html#install-pytorch-lightning
   # - pip:
   #   - tensorflow==2.10.1 # GPU-enabled!
 
