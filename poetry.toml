@@ -1,4 +1,5 @@
 # https://michhar.github.io/2023-07-poetry-with-conda/
 [virtualenvs]
-path = "$CONDA_ENV_PATH"
+#path = "$CONDA_ENV_PATH"
 create = false
+in-project = true
