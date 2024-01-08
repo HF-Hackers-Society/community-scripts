@@ -61,9 +61,18 @@ If there are still any errors encountered from managing CUDA 11.8, download Purf
 
 ```
 conda create --name hf --file conda-linux-64.lock
+conda activate hf
 poetry env use python
 poetry install
 accelerate config
+```
+
+### Final Checks
+
+```
+# Should print the conda env path
+poetry env info -p
+pytest
 ```
 
 ## Reporting issues
