@@ -15,9 +15,6 @@ exclude = ["docs"]
 [tool.poetry.dependencies]
 python = "~3.10"
 conda-lock = "^2.5.1"
-# https://stackoverflow.com/questions/74949556/poetry-fails-to-install-tensorflow
-tensorflow-io-gcs-filesystem = "0.27.0"
-tensorflow = "2.10.1"
 diffusers = {extras = ["torch"], version = "^0.25.0"}
 transformers = "^4.36.2"
 bitsandbytes = "^0.41.3.post2"
@@ -31,7 +28,7 @@ scipy = "^1.11.4"
 #     {platform = "linux", url = "https://download.pytorch.org/whl/cu121/xformers-0.0.23.post1-cp310-cp310-manylinux2014_x86_64.whl"},
 #     {platform = "win64", url = "https://download.pytorch.org/whl/cu121/xformers-0.0.23.post1-cp310-cp310-win_amd64.whl"}
 # ]
-
+optimum = {extras = ["onnxruntime-gpu"], version = "^1.16.1"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.4"
@@ -66,10 +63,13 @@ testpaths = [
 # https://poethepoet.natn.io/global_options.html
 [tool.poe]
 verbosity = 1
-poetry_command = ""
+envfile = ".env"
 
 # [tool.poe.poetry_hooks]
-# post_install = "archive-build"
+# post_remove = "uninstall"
+
+# [tool.poe.tasks.uninstall]
+# script = "conda remove"
 
 # [tool.poe.tasks.install-flash-attn]
 # script = "python -m pip install flash-attn --no-build-isolation"
