@@ -3181,6 +3181,19 @@ dynamo = ["jinja2"]
 opt-einsum = ["opt-einsum (>=3.3)"]
 
 [[package]]
+name = "torchao"
+version = "0.0.3"
+description = "Package for applying ao techniques to GPU models"
+optional = false
+python-versions = "*"
+files = [
+    {file = "torchao-0.0.3.tar.gz", hash = "sha256:8065a0525379c08e430cc1accd23c3f34e77b154c472f9274a3ef2bfef93597f"},
+]
+
+[package.dependencies]
+torch = "*"
+
+[[package]]
 name = "tqdm"
 version = "4.66.1"
 description = "Fast, Extensible Progress Meter"
@@ -3628,4 +3641,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "afd9d4c66497e69f3502f6907694ce3f5d4ba5869f72ecc7f19917ac403c67a6"
+content-hash = "4332aac3314227916a6b123de11cce7fe343ba0c409c019f5d1b19a1a4e16155"

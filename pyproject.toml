@@ -6,11 +6,8 @@ description = "HuggingFace community scripts reworked, modified, etc."
 authors = ["T145"]
 license = "AGPL-3.0-or-later"
 readme = "README.md"
-packages = [{include = "hf-community-scripts"}]
+packages = [{include = "hf_community_scripts"}]
 exclude = ["docs"]
-
-[tool.poetry.extras]
-# List potential platform specifications
 
 [tool.poetry.dependencies]
 python = "~3.10"
@@ -25,10 +22,10 @@ sentencepiece = "^0.1.99" # https://colab.research.google.com/drive/1YORPWx4okIH
 peft = "^0.7.1" # https://huggingface.co/docs/peft/install | https://huggingface.co/blog/peft
 scipy = "^1.11.4"
 optimum = {extras = ["onnxruntime-gpu"], version = "^1.16.1"}
-#torchao = "^0.0.3"
 triton = {platform = "linux", version = "2.1.0"}
 xformers = {source = "pytorch", version = "0.0.23.post1"}
-# flash-attn = { git = "https://github.com/Dao-AILab/flash-attention.git", tag = "v2.4.2" }
+#flash-attn = { git = "https://github.com/Dao-AILab/flash-attention.git", tag = "v2.4.2" }
+torchao = "^0.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.4"
