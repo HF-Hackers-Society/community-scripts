@@ -2,7 +2,9 @@ import platform
 import torch
 from diffusers import StableDiffusionXLPipeline, AutoencoderKL, UNet2DConditionModel
 from transformers import CLIPTextModel
+from safetensors.torch import load_file as load_tensors
 from ...utils import flush, log_gpu_cache
+from typing import List
 
 
 HAS_LINUX = platform.system().lower() == 'linux'
@@ -87,6 +89,7 @@ def load_pipeline(
 	upcast_vae: bool = True,
 	fuse_projections: bool = True,
 	xformers: bool = torch.__version__ < '2.0.0', # If using PyTorch 2+, this only saves about ~0.5 GB memory!
+	prompt_embeds: List[str] = list()
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
 		raise ValueError("Compilation for UNet must be enabled when quantizing.")
@@ -133,7 +136,16 @@ def load_pipeline(
 		text_encoder=text_encoder,
 		use_safetensors=True,
 		**model_args
-	).to(device)
+	)
+
+	for tensors in prompt_embeds:
+		tensors = path.normpath(tensors)
+		state_dict = load_tensors(tensors)
+		token = path.splitext(path.basename(tensors))[0]
+		pipe.load_textual_inversion(state_dict["clip_g"], token, text_encoder=pipe.text_encoder_2, tokenizer=pipe.tokenizer_2)
+		pipe.load_textual_inversion(state_dict["clip_l"], token, text_encoder=pipe.text_encoder, tokenizer=pipe.tokenizer)
+
+	pipe = pipe.to(device)
 
 	# "diffusers-fast" sends the pipe to the device after setting everything below in its runner,
 	# however the docs do it before all the changes (and doing it before is significantly faster)
