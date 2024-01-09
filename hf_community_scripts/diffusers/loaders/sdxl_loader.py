@@ -2,16 +2,19 @@ import platform
 import torch
 from diffusers import StableDiffusionXLPipeline, AutoencoderKL, UNet2DConditionModel
 from transformers import CLIPTextModel
-from torchao.quantization import (
-	apply_dynamic_quant,
-	change_linear_weights_to_int4_woqtensors,
-	change_linear_weights_to_int8_woqtensors,
-	swap_conv2d_1x1_to_linear
-)
 from ...utils import flush, log_gpu_cache
 
 
 HAS_LINUX = platform.system().lower() == 'linux'
+CAN_QUANT = torch.__version__ >= '2.3.0'
+
+if CAN_QUANT:
+	from torchao.quantization import (
+		apply_dynamic_quant,
+		change_linear_weights_to_int4_woqtensors,
+		change_linear_weights_to_int8_woqtensors,
+		swap_conv2d_1x1_to_linear
+	)
 
 
 def dynamic_quant_filter_fn(mod, *args):
@@ -57,8 +60,7 @@ def load_torch(no_bf16: bool) -> (str, torch.dtype):
 
 
 def quantize(do_quant: str, component: UNet2DConditionModel | AutoencoderKL):
-	if torch.__version__ < '2.3.0':
-		return
+	swap_conv2d_1x1_to_linear(component, conv_filter_fn)
 
 	if args.do_quant == "int4weightonly":
 		change_linear_weights_to_int4_woqtensors(component)
@@ -76,10 +78,10 @@ def quantize(do_quant: str, component: UNet2DConditionModel | AutoencoderKL):
 def load_pipeline(
 	chkpt: str = 'stabilityai/stable-diffusion-xl-base-1.0',
 	cache_dir: str = 'downloads/',
-	do_quant: str = 'int8dynamic' if HAS_LINUX else None,
+	do_quant: str = 'int8dynamic' if CAN_QUANT else None,
 	compile_unet: bool = HAS_LINUX,
 	compile_vae: bool = HAS_LINUX,
-	compile_mode: str = 'max-autotune',
+	compile_mode: str = 'max-autotune' if CAN_QUANT else 'reduce-overhead',
 	use_tf32: bool = False, # Faster but slightly less accurate
 	no_bf16: bool = True,
 	upcast_vae: bool = True,
@@ -163,8 +165,6 @@ def load_pipeline(
 		torch._inductor.config.coordinate_descent_check_all_directions = True
 
 	if compile_unet:
-		swap_conv2d_1x1_to_linear(pipe.unet, conv_filter_fn)
-
 		if do_quant:
 			quantize(do_quant, pipe.unet)
 			print("Applied quantization to UNet.")
@@ -173,8 +173,6 @@ def load_pipeline(
 		print("Compiled UNet.")
 
 	if compile_vae:
-		swap_conv2d_1x1_to_linear(pipe.vae, conv_filter_fn)
-
 		if do_quant:
 			quantize(do_quant, pipe.vae)
 			print("Applied quantization to VAE.")
