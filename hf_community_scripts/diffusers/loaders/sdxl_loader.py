@@ -2,6 +2,12 @@ import platform
 import torch
 from diffusers import StableDiffusionXLPipeline, AutoencoderKL, UNet2DConditionModel
 from transformers import CLIPTextModel
+from torchao.quantization import (
+	apply_dynamic_quant,
+	change_linear_weights_to_int4_woqtensors,
+	change_linear_weights_to_int8_woqtensors,
+	swap_conv2d_1x1_to_linear
+)
 from ...utils import flush, log_gpu_cache
 
 
@@ -51,15 +57,8 @@ def load_torch(no_bf16: bool) -> (str, torch.dtype):
 
 
 def quantize(do_quant: str, component: UNet2DConditionModel | AutoencoderKL):
-	if torch.__version__ < '3.0.0':
+	if torch.__version__ < '2.3.0':
 		return
-
-	from torchao.quantization import (
-		apply_dynamic_quant,
-		change_linear_weights_to_int4_woqtensors,
-		change_linear_weights_to_int8_woqtensors,
-		swap_conv2d_1x1_to_linear,
-	)
 
 	if args.do_quant == "int4weightonly":
 		change_linear_weights_to_int4_woqtensors(component)

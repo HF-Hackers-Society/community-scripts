@@ -11,7 +11,6 @@ exclude = ["docs"]
 
 [tool.poetry.dependencies]
 python = "~3.10"
-conda-lock = "^2.5.1"
 diffusers = {extras = ["torch"], version = "^0.25.0"}
 transformers = "^4.36.2"
 bitsandbytes = "^0.41.3.post2"
@@ -23,7 +22,7 @@ peft = "^0.7.1" # https://huggingface.co/docs/peft/install | https://huggingface
 scipy = "^1.11.4"
 optimum = {extras = ["onnxruntime-gpu"], version = "^1.16.1"}
 triton = {platform = "linux", version = "2.1.0"}
-xformers = {source = "pytorch", version = "0.0.23.post1"}
+xformers = {source = "pytorch", version = "0.0.23.post1"} # b/c the conda repo only supports linux
 #flash-attn = { git = "https://github.com/Dao-AILab/flash-attention.git", tag = "v2.4.2" }
 torchao = "^0.0.3"
 
