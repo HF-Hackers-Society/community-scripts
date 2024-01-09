@@ -1,6 +1,7 @@
 import platform
 import torch
 from diffusers import StableDiffusionXLPipeline, AutoencoderKL, UNet2DConditionModel
+from transformers import CLIPTextModel
 from ...utils import flush, log_gpu_cache
 
 
@@ -115,7 +116,20 @@ def load_pipeline(
 	if dtype == torch.float16:
 		model_args['variant'] = 'fp16'
 
+	# pipeline = cached_download(
+	# 	url='https://raw.githubusercontent.com/huggingface/diffusers/main/examples/community/lpw_stable_diffusion_xl.py',
+	# 	cache_dir=model_args['cache_dir'],
+	# 	force_filename='lpw_stable_diffusion_xl.py'
+	# )
+
+	# "clip-vit-large-patch14" is older!
+	text_encoder = CLIPTextModel.from_pretrained(
+		'openai/clip-vit-large-patch14-336',
+		**uni_args
+	)
+
 	pipe = StableDiffusionXLPipeline.from_pretrained(
+		text_encoder=text_encoder,
 		use_safetensors=True,
 		**model_args
 	).to(device)
