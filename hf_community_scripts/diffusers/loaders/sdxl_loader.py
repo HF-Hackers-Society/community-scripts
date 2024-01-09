@@ -84,6 +84,7 @@ def load_pipeline(
 	no_bf16: bool = True,
 	upcast_vae: bool = True,
 	fuse_projections: bool = True,
+	xformers: bool = torch.__version__ < '2.0.0', # If using PyTorch 2+, this only saves about ~0.5 GB memory!
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
 		raise ValueError("Compilation for UNet must be enabled when quantizing.")
@@ -167,6 +168,9 @@ def load_pipeline(
 
 		pipe.vae.decode = torch.compile(pipe.vae.decode, mode=compile_mode, fullgraph=True)
 		print("Compiled VAE.")
+
+	if xformers:
+		pipe.enable_xformers_memory_efficient_attention()
 
 	if device == 'cuda':
 		log_gpu_cache()
