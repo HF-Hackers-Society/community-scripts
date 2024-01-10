@@ -42,9 +42,9 @@ Install the following:
 ```
 # Other popular buckets: versions, java
 scoop bucket add extras
-scoop install rust miniconda3
+scoop install rust mambaforge
 conda update conda --all
-conda create -n hf --file conda-win-64.lock
+mamba create -n hf --file conda-win-64.lock
 conda activate hf
 poetry env use python
 poetry install
@@ -53,10 +53,10 @@ accelerate config
 
 ### Linux
 
-*Install build-essential, drivers, cudatoolkit, libsndfile1-dev, and libgl1!*
+*Install build-essential, NVIDIA drivers, cudatoolkit, libsndfile1-dev, libgl1, and mamba!*
 
 ```
-conda create --name hf --file conda-linux-64.lock
+mamba create --name hf --file conda-linux-64.lock
 conda activate hf
 poetry env use python
 poetry install
