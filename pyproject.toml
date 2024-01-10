@@ -11,7 +11,7 @@ exclude = ["docs"]
 
 [tool.poetry.dependencies]
 python = "~3.11"
-diffusers = {extras = ["torch"], version = "^0.25.0"}
+diffusers = "^0.25.0"
 transformers = "^4.36.2"
 bitsandbytes = "^0.41.3.post2"
 ninja = "^1.11.1.1"
@@ -23,7 +23,7 @@ scipy = "^1.11.4"
 optimum = {extras = ["onnxruntime-gpu"], version = "^1.16.1"}
 triton = {platform = "linux", version = "2.1.0"}
 xformers = {source = "pytorch", version = "0.0.23.post1"} # b/c the conda repo only supports linux
-torchao = "^0.0.3"
+torchao = {platform = "linux", version = "^0.0.3"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.4"

@@ -2,7 +2,7 @@
 name: hf
 channels:
   - nvidia # Need this high so we don't get CPU packages
-  - pytorch-nightly
+  - pytorch #-nightly
   - conda-forge
   # We want to have a reproducible setup, so we don't want default channels,
   # which may be different for different users. All required channels should
@@ -12,11 +12,16 @@ dependencies:
   - python=3.11.*
   - conda-lock
   - mamba
+  - micromamba
+  # - conda-forge::libarchive # https://github.com/mamba-org/mamba/issues/1728
   - pip  # pip must be mentioned explicitly, or conda-lock will fail
   - poetry
-  - pytorch-nightly::pytorch=2.3.*
-  - pytorch-nightly::torchaudio=2.2.*
-  - pytorch-nightly::torchvision=0.18.*
+  - pytorch::pytorch=2.1.2
+  - pytorch::torchaudio=2.1.2
+  - pytorch::torchvision=0.16.2
+  # - pytorch-nightly::pytorch=2.3.*
+  # - pytorch-nightly::torchaudio=2.2.*
+  # - pytorch-nightly::torchvision=0.18.*
   - conda-forge::lightning=2.1.3 # https://lightning.ai/docs/pytorch/stable/starter/introduction.html#install-pytorch-lightning
 
 # Non-standard section listing target platforms for conda-lock:

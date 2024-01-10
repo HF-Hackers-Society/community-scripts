@@ -4,6 +4,10 @@ import math
 
 def flush():
 	torch.cuda.empty_cache()
+
+	if torch.__version__ < '2.3.0':
+		torch.cuda.reset_max_memory_allocated()
+
 	torch.cuda.reset_peak_memory_stats()
 
 

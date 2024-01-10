@@ -43,7 +43,8 @@ Install the following:
 # Other popular buckets: versions, java
 scoop bucket add extras
 scoop install rust mambaforge
-conda update conda --all
+mamba update mamba --all
+# Be sure you're in the "base" env!
 mamba create -n hf --file conda-win-64.lock
 conda activate hf
 poetry env use python
@@ -56,6 +57,7 @@ accelerate config
 *Install build-essential, NVIDIA drivers, cudatoolkit, libsndfile1-dev, libgl1, and mamba!*
 
 ```
+# Be sure you're in the "base" env!
 mamba create --name hf --file conda-linux-64.lock
 conda activate hf
 poetry env use python
