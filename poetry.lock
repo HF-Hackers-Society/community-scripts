@@ -2,13 +2,13 @@
 
 [[package]]
 name = "accelerate"
-version = "0.26.0"
+version = "0.26.1"
 description = "Accelerate"
 optional = false
 python-versions = ">=3.8.0"
 files = [
-    {file = "accelerate-0.26.0-py3-none-any.whl", hash = "sha256:fec56ee3f934fb441a75486e43d50ca2639d94f752baaa92799f1ff494c3dd1b"},
-    {file = "accelerate-0.26.0.tar.gz", hash = "sha256:3b98a86b6c2e362d6c98a581346fd57f444b949866dd50f313e552b613784e9e"},
+    {file = "accelerate-0.26.1-py3-none-any.whl", hash = "sha256:04df826b84ac7bad8a0a8ab90e6aeacdecb1ea5a2d744d7e94f6735c29183227"},
+    {file = "accelerate-0.26.1.tar.gz", hash = "sha256:bf63716b6bd9460d87da970cf4d833abb824ca0aa633be36b741e63a1b504f89"},
 ]
 
 [package.dependencies]
@@ -734,13 +734,13 @@ files = [
 
 [[package]]
 name = "jinja2"
-version = "3.1.2"
+version = "3.1.3"
 description = "A very fast and expressive template engine."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
-    {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
+    {file = "Jinja2-3.1.3-py3-none-any.whl", hash = "sha256:7d6d50dd97d52cbc355597bd845fabfbac3f551e1f99619e39a35ce8c370b5fa"},
+    {file = "Jinja2-3.1.3.tar.gz", hash = "sha256:ac8bd6544d4bb2c9792bf3a159e80bba8fda7f07e81bc3aed565432d5925ba90"},
 ]
 
 [package.dependencies]
@@ -2364,6 +2364,76 @@ files = [
 torch = "*"
 
 [[package]]
+name = "torchaudio"
+version = "2.1.2"
+description = "An audio package for PyTorch"
+optional = false
+python-versions = "*"
+files = [
+    {file = "torchaudio-2.1.2-cp310-cp310-macosx_10_13_x86_64.whl", hash = "sha256:06f8c02814e6cdd78626bbf44ad2bb8afa5b39ab650c6af18328a32311461058"},
+    {file = "torchaudio-2.1.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9d676673c1ce4dd11fca145e3a6cd9b4e5b897cffad0f617d2906f2d3fc8c3a9"},
+    {file = "torchaudio-2.1.2-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:23c1b34e98664a0ac239efd4e1a0af407b3dd0a86a5869114bae582c3e5437d7"},
+    {file = "torchaudio-2.1.2-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:f82657fc4ec3b473bf6c752c0ee62d7f511af9ef37e5143f8339ec049504d767"},
+    {file = "torchaudio-2.1.2-cp310-cp310-win_amd64.whl", hash = "sha256:683eaa721e016ca1f27bb28fa89feae37a6f7b98ff1ceee0d5e5aedd19bd982c"},
+    {file = "torchaudio-2.1.2-cp311-cp311-macosx_10_13_x86_64.whl", hash = "sha256:c1084eedf4ced1af9fdd18910690ff615f89baeb30b32030806543fbc6f3657e"},
+    {file = "torchaudio-2.1.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:860acc32e6507063f2c13d81e26718199e215f34a2bcd6c9609a25e9bf21aa36"},
+    {file = "torchaudio-2.1.2-cp311-cp311-manylinux1_x86_64.whl", hash = "sha256:50c651d60bde7a4e096bf376eddb9ea32da6e37c3827536d6e918798ad203dbf"},
+    {file = "torchaudio-2.1.2-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:9a6bade8a2495a724f4ee6acb5e86828ff4083dc6c7c57c6386b54a0ea7afe71"},
+    {file = "torchaudio-2.1.2-cp311-cp311-win_amd64.whl", hash = "sha256:47f322708c282e0b1b7548cdbe4e12451c531061761885d7c7fe2e479a4a3861"},
+    {file = "torchaudio-2.1.2-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:d0efd008c35dec962b80f5dce3468bd1b88301cf65152bbfa7f74c0005a17e89"},
+    {file = "torchaudio-2.1.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:30ad97112412592518953f3cc2cd1b6ae153d6563dd5bd9eab6a972315fe9d9e"},
+    {file = "torchaudio-2.1.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:c33e05c2305bc4d659aaf77a385433e3f8ac07ae235d3b15d6ef4ff995258746"},
+    {file = "torchaudio-2.1.2-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:ff7156b30eb05e9124286c30c80da84b93e227d009adb96eb19489600b459332"},
+    {file = "torchaudio-2.1.2-cp38-cp38-win_amd64.whl", hash = "sha256:dbaefae9ca0b208ce0157e0358cea8ab796c9e26a2c61c3d181246e4010b04d2"},
+    {file = "torchaudio-2.1.2-cp39-cp39-macosx_10_13_x86_64.whl", hash = "sha256:ae50dcf34d5c6f73180cf694195ee31194b9d6090328575c30a5960bc716fa52"},
+    {file = "torchaudio-2.1.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:14729cc9df52defa674fcf5ed4de0d6507038ef18012b96a2f56a77ed70676dd"},
+    {file = "torchaudio-2.1.2-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:03b4cf02ee468b25280f9593cca95a32b517a88512a1e5f41129e24cd0c17e64"},
+    {file = "torchaudio-2.1.2-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:b3bbb5324e705ded77616e546591b249ae7588d35a3e8c2c4c1d986a5ea51ef4"},
+    {file = "torchaudio-2.1.2-cp39-cp39-win_amd64.whl", hash = "sha256:03d2a3c9a806486f2d9646381a564a922a880b6df8f18336b6f0e4a0d8356743"},
+]
+
+[package.dependencies]
+torch = "2.1.2"
+
+[[package]]
+name = "torchvision"
+version = "0.16.2"
+description = "image and video datasets and models for torch deep learning"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "torchvision-0.16.2-cp310-cp310-macosx_10_13_x86_64.whl", hash = "sha256:bc86f2800cb2c0c1a09c581409cdd6bff66e62f103dc83fc63f73346264c3756"},
+    {file = "torchvision-0.16.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:b024bd412df6d3a007dcebf311a894eb3c5c21e1af80d12be382bbcb097a7c3a"},
+    {file = "torchvision-0.16.2-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:e89f10f3c8351972b6e3fda95bc3e479ea8dbfc9dfcfd2c32902dbad4ba5cfc5"},
+    {file = "torchvision-0.16.2-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:96c7583700112a410bdc4e1e4f118c429dab49c29c9a31a2cc3579bc9b08b19d"},
+    {file = "torchvision-0.16.2-cp310-cp310-win_amd64.whl", hash = "sha256:9f4032ebb3277fb07ff6a9b818d50a547fb8fcd89d958cfd9e773322454bb688"},
+    {file = "torchvision-0.16.2-cp311-cp311-macosx_10_13_x86_64.whl", hash = "sha256:67b1aaf8b8cb02ce75dd445f291a27c8036a502f8c0aa76e28c37a0faac2e153"},
+    {file = "torchvision-0.16.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:bef30d03e1d1c629761f4dca51d3b7d8a0dc0acce6f4068ab2a1634e8e7b64e0"},
+    {file = "torchvision-0.16.2-cp311-cp311-manylinux1_x86_64.whl", hash = "sha256:e59cc7b2bd1ab5c0ce4ae382e4e37be8f1c174e8b5de2f6a23c170de9ae28495"},
+    {file = "torchvision-0.16.2-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:e130b08cc9b3cc73a6c59d6edf032394a322f9579bfd21d14bc2e1d0999aa758"},
+    {file = "torchvision-0.16.2-cp311-cp311-win_amd64.whl", hash = "sha256:8692ab1e48807e9604046a6f4beeb67b523294cee1b00828654bb0df2cfce2b2"},
+    {file = "torchvision-0.16.2-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:b82732dcf876a37c852772342aa6ee3480c03bb3e2a802ae109fc5f7e28d26e9"},
+    {file = "torchvision-0.16.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:4b065143d1a720fe8a9077fd4be35d491f98819ec80b3dbbc3ec64d0b707a906"},
+    {file = "torchvision-0.16.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:bc5f274e4ecd1b86062063cdf4fd385a1d39d147a3a2685fbbde9ff08bb720b8"},
+    {file = "torchvision-0.16.2-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:335959c43b371c0474af34c1ef2a52efdc7603c45700d29e4475eeb02984170c"},
+    {file = "torchvision-0.16.2-cp38-cp38-win_amd64.whl", hash = "sha256:7fd22d86e08eba321af70cad291020c2cdeac069b00ce88b923ca52e06174769"},
+    {file = "torchvision-0.16.2-cp39-cp39-macosx_10_13_x86_64.whl", hash = "sha256:56115268b37f0b75364e3654e47ad9abc66ac34c1f9e5e3dfa89a22d6a40017a"},
+    {file = "torchvision-0.16.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:82805f8445b094f9d1e770390ee6cc86855e89955e08ce34af2e2274fc0e5c45"},
+    {file = "torchvision-0.16.2-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:3f4bd5fcbc361476e2e78016636ac7d5509e59d9962521f06eb98e6803898182"},
+    {file = "torchvision-0.16.2-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:8199acdf8ab066a28b84a5b6f4d97b58976d9e164b1acc3a9d14fccfaf74bb3a"},
+    {file = "torchvision-0.16.2-cp39-cp39-win_amd64.whl", hash = "sha256:41dd4fa9f176d563fe9f1b9adef3b7e582cdfb60ce8c9bc51b094a025be687c9"},
+]
+
+[package.dependencies]
+numpy = "*"
+pillow = ">=5.3.0,<8.3.dev0 || >=8.4.dev0"
+requests = "*"
+torch = "2.1.2"
+
+[package.extras]
+scipy = ["scipy"]
+
+[[package]]
 name = "tqdm"
 version = "4.66.1"
 description = "Fast, Extensible Progress Meter"
@@ -2780,4 +2850,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "25c0e7efe2cfe45be9892d354a3f897e675fccd150f77618970caf66342ccd62"
+content-hash = "59a2064149eb58b1a18b3c309b4e55a8d5f5191b7ef09a27bdb1996e1049b0a9"
