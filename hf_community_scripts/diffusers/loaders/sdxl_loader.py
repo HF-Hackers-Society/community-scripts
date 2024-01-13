@@ -1,6 +1,19 @@
 import platform
 import torch
-from diffusers import StableDiffusionXLPipeline, AutoencoderKL, UNet2DConditionModel
+from diffusers import (
+	StableDiffusionXLPipeline,
+	AutoencoderKL,
+	UNet2DConditionModel,
+	EulerDiscreteScheduler,
+	EulerAncestralDiscreteScheduler,
+	DPMSolverMultistepScheduler,
+	DPMSolverSinglestepScheduler,
+	KDPM2DiscreteScheduler,
+	KDPM2AncestralDiscreteScheduler,
+	UniPCMultistepScheduler,
+	HeunDiscreteScheduler,
+	LMSDiscreteScheduler,
+)
 from transformers import CLIPTextModel
 from safetensors.torch import load_file as load_tensors
 from ...utils import flush, log_gpu_cache
@@ -77,6 +90,66 @@ def quantize(do_quant: str, component: UNet2DConditionModel | AutoencoderKL):
 	torch._inductor.config.use_mixed_mm = True
 
 
+# https://huggingface.co/docs/diffusers/v0.25.0/en/api/schedulers/overview#schedulers
+def get_scheduler(model_args: dict, scheduler_id: str):
+	if scheduler_id == 'euler':
+		return EulerDiscreteScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'euler_a':
+		return EulerAncestralDiscreteScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'dpmpp_2m_sde_karras':
+		return DPMSolverMultistepScheduler.from_pretrained(
+			use_karras_sigmas=True,
+			algorithm_type='sde-dpmsolver++',
+			**model_args
+		)
+	elif scheduler_id == 'dpmpp_2m_sde':
+		return DPMSolverMultistepScheduler.from_pretrained(
+			algorithm_type='sde-dpmsolver++',
+			**model_args
+		)
+	elif scheduler_id == 'dpmpp_2m_karras':
+		return DPMSolverMultistepScheduler.from_pretrained(
+			use_karras_sigmas=True,
+			**model_args
+		)
+	elif scheduler_id == 'dpmpp_2m':
+		return DPMSolverMultistepScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'dpmpp_sde':
+		return DPMSolverSinglestepScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'dpmpp_sde_karras':
+		return DPMSolverSinglestepScheduler.from_pretrained(
+			use_karras_sigmas=True,
+			**model_args
+		)
+	elif scheduler_id == 'huen':
+		return HeunDiscreteScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'lms':
+		return LMSDiscreteScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'lms_karras':
+		return LMSDiscreteScheduler.from_pretrained(
+			use_karras_sigmas=True,
+			**model_args
+		)
+	elif scheduler_id == 'unipc':
+		return UniPCMultistepScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'dpm2':
+		return KDPM2DiscreteScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'dpm2_karras':
+		return KDPM2DiscreteScheduler.from_pretrained(
+			use_karras_sigmas=True,
+			**model_args
+		)
+	elif scheduler_id == 'dpm2_a':
+		return KDPM2AncestralDiscreteScheduler.from_pretrained(**model_args)
+	elif scheduler_id == 'dpm2_a_karras':
+		return KDPM2AncestralDiscreteScheduler.from_pretrained(
+			use_karras_sigmas=True,
+			**model_args
+		)
+
+	raise ValueError('Unknown Scheduler ID: "{}"'.format(scheduler_id))
+
+
 def load_pipeline(
 	chkpt: str = 'stabilityai/stable-diffusion-xl-base-1.0',
 	cache_dir: str = 'downloads/',
@@ -89,7 +162,8 @@ def load_pipeline(
 	upcast_vae: bool = True,
 	fuse_projections: bool = True,
 	xformers: bool = torch.__version__ < '2.0.0', # If using PyTorch 2+, this only saves about ~0.5 GB memory!
-	prompt_embeds: List[str] = list()
+	prompt_embeds: List[str] = list(),
+	scheduler_id: str = 'dpmpp_2m_sde_karras', # SDXL default is euler
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
 		raise ValueError("Compilation for UNet must be enabled when quantizing.")
@@ -117,9 +191,6 @@ def load_pipeline(
 		**uni_args
 	}
 
-	if dtype == torch.float16:
-		model_args['variant'] = 'fp16'
-
 	# pipeline = cached_download(
 	# 	url='https://raw.githubusercontent.com/huggingface/diffusers/main/examples/community/lpw_stable_diffusion_xl.py',
 	# 	cache_dir=model_args['cache_dir'],
@@ -132,7 +203,17 @@ def load_pipeline(
 		**uni_args
 	)
 
+	scheduler = get_scheduler({
+		'pretrained_model_name_or_path': chkpt,
+		'cache_dir': cache_dir,
+		'subfolder': 'scheduler',
+	}, scheduler_id)
+
+	if dtype == torch.float16:
+		model_args['variant'] = 'fp16'
+
 	pipe = StableDiffusionXLPipeline.from_pretrained(
+		scheduler=scheduler,
 		text_encoder=text_encoder,
 		use_safetensors=True,
 		**model_args
