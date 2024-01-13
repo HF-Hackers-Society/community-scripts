@@ -18,6 +18,7 @@ from transformers import CLIPTextModel
 from safetensors.torch import load_file as load_tensors
 from ...utils import flush, log_gpu_cache
 from typing import List
+from huggingface_hub import cached_download
 
 
 HAS_LINUX = platform.system().lower() == 'linux'
@@ -163,7 +164,7 @@ def load_pipeline(
 	fuse_projections: bool = True,
 	xformers: bool = torch.__version__ < '2.0.0', # If using PyTorch 2+, this only saves about ~0.5 GB memory!
 	prompt_embeds: List[str] = list(),
-	scheduler_id: str = 'dpmpp_2m_sde_karras', # SDXL default is euler
+	scheduler_id: str = 'euler', # SDXL default
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
 		raise ValueError("Compilation for UNet must be enabled when quantizing.")
@@ -191,11 +192,11 @@ def load_pipeline(
 		**uni_args
 	}
 
-	# pipeline = cached_download(
-	# 	url='https://raw.githubusercontent.com/huggingface/diffusers/main/examples/community/lpw_stable_diffusion_xl.py',
-	# 	cache_dir=model_args['cache_dir'],
-	# 	force_filename='lpw_stable_diffusion_xl.py'
-	# )
+	pipeline = cached_download(
+		url='https://raw.githubusercontent.com/huggingface/diffusers/main/examples/community/lpw_stable_diffusion_xl.py',
+		cache_dir=model_args['cache_dir'],
+		force_filename='lpw_stable_diffusion_xl.py'
+	)
 
 	# "clip-vit-large-patch14" is older!
 	text_encoder = CLIPTextModel.from_pretrained(
@@ -216,6 +217,7 @@ def load_pipeline(
 		scheduler=scheduler,
 		text_encoder=text_encoder,
 		use_safetensors=True,
+		custom_pipeline=pipeline,
 		**model_args
 	)
 
