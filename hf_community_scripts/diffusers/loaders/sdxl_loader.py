@@ -78,14 +78,14 @@ def load_torch(no_bf16: bool) -> (str, torch.dtype):
 def quantize(do_quant: str, component: UNet2DConditionModel | AutoencoderKL):
 	swap_conv2d_1x1_to_linear(component, conv_filter_fn)
 
-	if args.do_quant == "int4weightonly":
+	if args.do_quant == 'int4weightonly':
 		change_linear_weights_to_int4_woqtensors(component)
-	elif args.do_quant == "int8weightonly":
+	elif args.do_quant == 'int8weightonly':
 		change_linear_weights_to_int8_woqtensors(component)
-	elif args.do_quant == "int8dynamic":
+	elif args.do_quant == 'int8dynamic':
 		apply_dynamic_quant(component, dynamic_quant_filter_fn)
 	else:
-		raise ValueError(f"Unknown do_quant value: {do_quant}.")
+		raise ValueError(f'Unknown do_quant value: {do_quant}.')
 
 	torch._inductor.config.force_fuse_int_mm_with_mul = True
 	torch._inductor.config.use_mixed_mm = True
@@ -148,7 +148,7 @@ def get_scheduler(model_args: dict, scheduler_id: str):
 			**model_args
 		)
 
-	raise ValueError('Unknown Scheduler ID: "{}"'.format(scheduler_id))
+	raise ValueError(f'Unknown Scheduler ID: "{scheduler_id}"')
 
 
 def load_pipeline(
@@ -167,9 +167,9 @@ def load_pipeline(
 	scheduler_id: str = 'euler', # SDXL default
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
-		raise ValueError("Compilation for UNet must be enabled when quantizing.")
+		raise ValueError('Compilation for UNet must be enabled when quantizing.')
 	if do_quant and not compile_vae:
-		raise ValueError("Compilation for VAE must be enabled when quantizing.")
+		raise ValueError('Compilation for VAE must be enabled when quantizing.')
 
 	flush()
 
@@ -180,7 +180,7 @@ def load_pipeline(
 		torch.backends.cudnn.allow_tf32 = True
 
 	device, dtype = load_torch(no_bf16)
-	print(f"Using dtype: {dtype}")
+	print(f'Using dtype: {dtype}')
 
 	uni_args = {
 		'cache_dir': cache_dir,
@@ -198,7 +198,7 @@ def load_pipeline(
 		force_filename='lpw_stable_diffusion_xl.py'
 	)
 
-	# "clip-vit-large-patch14" is older!
+	# 'clip-vit-large-patch14' is older!
 	text_encoder = CLIPTextModel.from_pretrained(
 		'openai/clip-vit-large-patch14-336',
 		**uni_args
@@ -225,35 +225,35 @@ def load_pipeline(
 		tensors = path.normpath(tensors)
 		state_dict = load_tensors(tensors)
 		token = path.splitext(path.basename(tensors))[0]
-		pipe.load_textual_inversion(state_dict["clip_g"], token, text_encoder=pipe.text_encoder_2, tokenizer=pipe.tokenizer_2)
-		pipe.load_textual_inversion(state_dict["clip_l"], token, text_encoder=pipe.text_encoder, tokenizer=pipe.tokenizer)
+		pipe.load_textual_inversion(state_dict['clip_g'], token, text_encoder=pipe.text_encoder_2, tokenizer=pipe.tokenizer_2)
+		pipe.load_textual_inversion(state_dict['clip_l'], token, text_encoder=pipe.text_encoder, tokenizer=pipe.tokenizer)
 
 	pipe = pipe.to(device)
 
-	# "diffusers-fast" sends the pipe to the device after setting everything below in its runner,
+	# 'diffusers-fast' sends the pipe to the device after setting everything below in its runner,
 	# however the docs do it before all the changes (and doing it before is significantly faster)
 
 	if not upcast_vae:
-		print("Using a more numerically stable VAE.")
+		print('Using a more numerically stable VAE.')
 		pipe.vae = AutoencoderKL.from_pretrained(
 			'madebyollin/sdxl-vae-fp16-fix', # https://huggingface.co/madebyollin/sdxl-vae-fp16-fix
 			**uni_args,
 		)
 
 	if fuse_projections:
-		print("Enabling fused QKV projections for both UNet and VAE.")
+		print('Enabling fused QKV projections for both UNet and VAE.')
 		pipe.fuse_qkv_projections()
 
 	if upcast_vae:
 		pipe.upcast_vae()
 
 	# https://huggingface.co/docs/diffusers/main/en/optimization/memory#channels-last-memory-format
-	if pipe.unet.conv_out.state_dict()["weight"].stride()[3] == 1:
-		print("Flipping memory format for both UNet and VAE.")
+	if pipe.unet.conv_out.state_dict()['weight'].stride()[3] == 1:
+		print('Flipping memory format for both UNet and VAE.')
 		pipe.unet.to(memory_format=torch.channels_last)
 		pipe.vae.to(memory_format=torch.channels_last)
 
-	if compile_mode == "max-autotune" and (compile_unet or compile_vae):
+	if compile_mode == 'max-autotune' and (compile_unet or compile_vae):
 		torch._inductor.config.conv_1x1_as_mm = True
 		torch._inductor.config.coordinate_descent_tuning = True
 		torch._inductor.config.epilogue_fusion = False
@@ -262,18 +262,18 @@ def load_pipeline(
 	if compile_unet:
 		if do_quant:
 			quantize(do_quant, pipe.unet)
-			print("Applied quantization to UNet.")
+			print('Applied quantization to UNet.')
 
 		pipe.unet = torch.compile(pipe.unet, mode=compile_mode, fullgraph=True)
-		print("Compiled UNet.")
+		print('Compiled UNet.')
 
 	if compile_vae:
 		if do_quant:
 			quantize(do_quant, pipe.vae)
-			print("Applied quantization to VAE.")
+			print('Applied quantization to VAE.')
 
 		pipe.vae.decode = torch.compile(pipe.vae.decode, mode=compile_mode, fullgraph=True)
-		print("Compiled VAE.")
+		print('Compiled VAE.')
 
 	if xformers:
 		pipe.enable_xformers_memory_efficient_attention()
