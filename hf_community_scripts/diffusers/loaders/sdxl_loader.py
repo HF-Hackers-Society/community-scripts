@@ -22,7 +22,8 @@ from huggingface_hub import cached_download
 
 
 HAS_LINUX = platform.system().lower() == 'linux'
-CAN_QUANT = torch.__version__ >= '2.3.0'
+CAN_QUANT = torch.__version__ >= '2.3.0' and HAS_LINUX
+
 
 if CAN_QUANT:
 	from torchao.quantization import (
