@@ -151,7 +151,65 @@ def get_scheduler(model_args: dict, scheduler_id: str):
 
 	raise ValueError(f'Unknown Scheduler ID: "{scheduler_id}"')
 
-
+	"""
+	chkpt:
+		The HuggingFace model ID or model path to use. If the former it will be
+		downloaded relative to `cache_dir`.
+	cache_dir:
+		Where to store any HuggingFace downloads. Defaults to `downloads/`,
+		which is ignored by default in the Python gitignore template.
+	do_quant:
+		The quantization mode to use. Its value can be one of `int4weightonly`,
+		`int8weightonly`, or `int8dynamic`, defaulting to `int8dynamic` on Linux.
+		If None or an empty string, quantization will be disabled. It also
+		requires UNet and VAE compilation to be enabled, which is not
+		supported on Windows at present.
+	compile_unet:
+		Whether to compile the UNet. Defaults to False on Windows.
+	compile_vae:
+		Whether to compile the UNet. Defaults to False on Windows.
+	compile_mode:
+		Any compilation mode supported by `torch.compile`. Defaults to
+		`reduce-overhead` unless quantization is enabled: then it defaults
+		to `max-autotune`.
+	use_tf32:
+		Whether to use TensorFloat32 precision. It's roughly equal to FP16 at FP32
+		precision. It provides free performance improvements on more modern NVIDIA GPUs.
+	no_bf16:
+		If True, FP16 is enabled. If False, BFP16 is enabled.
+	upcast_vae:
+		Whether to upcast the VAE. If False, the numerically-stable VAE `sdxl-vae-fp16-fix`
+		is used over whatever the default is due to using FP16.
+	fuse_projections:
+		Toggles fused QKV projections for both UNet and VAE.
+	xformers:
+		Enabled automatically if the available PyTorch version is less than 2.0.0,
+		since using XFormers with those versions gives memory and inference speed
+		improvements. In later PyTorch versions it only gives minor memory improvements.
+		It may be more beneficial on multi-gpu setups.
+	prompt_embeds:
+		A list of file paths to SafeTensor files with SDXL-compatible prompt embeddings.
+		If there are any unique activation words they will automatically be availabe to
+		the tokenizers.
+	scheduler_id:
+		The scheduler or algorithm configuration used to generate an image. The SDXL default
+		is `euler`, but it can also be one of the following values:
+		- `euler_a`
+		- `dpmpp_2m_sde_karras` (RECOMMENDED)
+		- `dpmpp_2m_sde`
+		- `dpmpp_2m_karras`
+		- `dpmpp_2m`
+		- `dpmpp_sde`
+		- `dpmpp_sde_karras`
+		- `huen`
+		- `lms`
+		- `lms_karras`
+		- `unipc` (solid option)
+		- `dpm2`
+		- `dpm2_karras`
+		- `dpm2_a`
+		- `dpm2_a_karras`
+	"""
 def load_pipeline(
 	chkpt: str = 'stabilityai/stable-diffusion-xl-base-1.0',
 	cache_dir: str = 'downloads/',
@@ -163,9 +221,9 @@ def load_pipeline(
 	no_bf16: bool = True,
 	upcast_vae: bool = True,
 	fuse_projections: bool = True,
-	xformers: bool = torch.__version__ < '2.0.0', # If using PyTorch 2+, this only saves about ~0.5 GB memory!
+	xformers: bool = torch.__version__ < '2.0.0', # If using PyTorch 2+, this only saves about ~0.5 GB!
 	prompt_embeds: List[str] = list(),
-	scheduler_id: str = 'euler', # SDXL default
+	scheduler_id: str = 'euler',
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
 		raise ValueError('Compilation for UNet must be enabled when quantizing.')
