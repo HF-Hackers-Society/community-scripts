@@ -220,7 +220,7 @@ do_freeu:
 	are made. Otherwise pass a dictionary with str keys being any of `b1`, `b2`, `s1`,
 	or `s2`, and values being the float value to set them to. If the dictionary is
 	present and any of the four values is absent, it will be substituted with a default
-	value that has creates no image generation changes. These values are b1=1.0, b2=1.2,
+	value that creates no image generation changes. These values are b1=1.0, b2=1.2,
 	s1=0.0, and s2=0.0.
 
 	Recommended by ChenyangSi:
@@ -232,6 +232,9 @@ do_freeu:
 	References:
 	- https://github.com/ChenyangSi/FreeU/tree/main#sdxl
 	- https://wandb.ai/nasirk24/UNET-FreeU-SDXL/reports/FreeU-SDXL-Optimal-Parameters--Vmlldzo1NDg4NTUw?accessToken=6745kr9rjd6e9yjevkr9bpd2lm6dpn6j00428gz5l60jrhl3gj4gubrz4aepupda
+do_tiling:
+	Toggles VAE tiling, which improves performance when generating highres images beyond
+	the default 1024x1024 resolution.
 """
 def load_pipeline(
 	chkpt: str = 'stabilityai/stable-diffusion-xl-base-1.0',
@@ -248,6 +251,7 @@ def load_pipeline(
 	prompt_embeds: List[str] = list(),
 	scheduler_id: str = 'euler',
 	do_freeu: Dict[str, float] = None,
+	do_tiling: bool = False,
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
 		raise ValueError('Compilation for UNet must be enabled when quantizing.')
@@ -345,6 +349,9 @@ def load_pipeline(
 	if fuse_projections:
 		print('Enabling fused QKV projections for both UNet and VAE.')
 		pipe.fuse_qkv_projections()
+
+	if do_tiling:
+		pipe.enable_vae_tiling()
 
 	if upcast_vae:
 		pipe.upcast_vae()
