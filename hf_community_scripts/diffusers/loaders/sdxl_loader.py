@@ -70,6 +70,8 @@ def conv_filter_fn(mod, *args) -> bool:
 
 
 def load_torch(no_bf16: bool) -> (str, torch.dtype):
+	torch.cuda.set_device(0)
+
 	if torch.cuda.is_available():
 		return 'cuda', torch.float16 if no_bf16 else torch.bfloat16
 	else:
@@ -260,6 +262,9 @@ def load_pipeline(
 
 	flush()
 
+	# https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#enable-cudnn-auto-tuner
+	torch.backends.cudnn.benchmark = True
+
 	if use_tf32:
 		# https://huggingface.co/docs/diffusers/optimization/fp16#use-tensorfloat32
 		# https://huggingface.co/docs/transformers/en/perf_train_gpu_one#tf32
@@ -338,6 +343,7 @@ def load_pipeline(
 
 	# 'diffusers-fast' sends the pipe to the device after setting everything below in its runner,
 	# however the docs do it before all the changes (and doing it before is significantly faster)
+	# https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#avoid-unnecessary-cpu-gpu-synchronization
 
 	if not upcast_vae:
 		print('Using a more numerically stable VAE.')
@@ -357,6 +363,7 @@ def load_pipeline(
 		pipe.upcast_vae()
 
 	# https://huggingface.co/docs/diffusers/main/en/optimization/memory#channels-last-memory-format
+	# https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#enable-channels-last-memory-format-for-computer-vision-models
 	if pipe.unet.conv_out.state_dict()['weight'].stride()[3] == 1:
 		print('Flipping memory format for both UNet and VAE.')
 		pipe.unet.to(memory_format=torch.channels_last)
@@ -386,6 +393,8 @@ def load_pipeline(
 
 	if xformers:
 		pipe.enable_xformers_memory_efficient_attention()
+
+	# torch.cuda.synchronize()
 
 	if device == 'cuda':
 		log_gpu_cache()

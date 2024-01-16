@@ -1625,6 +1625,17 @@ files = [
 numpy = ">=1.16.6"
 
 [[package]]
+name = "pyprof"
+version = "0.0.7"
+description = "This package focus on build time profiler for python functions and snippets."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pyprof-0.0.7-py3-none-any.whl", hash = "sha256:fe7304eb1ec69c70f3257d9db88c7cf0db2804d3f0877b0b7054390441f011f3"},
+    {file = "pyprof-0.0.7.tar.gz", hash = "sha256:57ab8a77d1b750d182e274966df211a7e7fcb0b1fc5195ee22a08c9e44ea5132"},
+]
+
+[[package]]
 name = "pyreadline3"
 version = "3.4.1"
 description = "A python implementation of GNU readline."
@@ -2850,4 +2861,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "59a2064149eb58b1a18b3c309b4e55a8d5f5191b7ef09a27bdb1996e1049b0a9"
+content-hash = "3d23c37aa50e7b3fb22694b6bc7387f21ff191ca4baa5724dae7b9a737c4a8dd"
