@@ -19,6 +19,10 @@ from safetensors.torch import load_file as load_tensors
 from ...utils import flush, log_gpu_cache
 from typing import List, Dict
 from huggingface_hub import cached_download
+from transformers import (
+	CLIPTokenizer,
+	CLIPTextModelWithProjection
+)
 
 
 HAS_LINUX = platform.system().lower() == 'linux'
@@ -160,6 +164,41 @@ load_pipeline
 Sends a model to a device automatically based on whether the required
 GPU technologies are available.
 
+
+EXAMPLES
+
+1) Simple init
+
+pipe = load_pipeline()
+
+2) Recommended settings
+
+width = 1024
+height = 1024
+n_steps = 50
+
+prompt = 'A majestic lion leaping from a big stone at night.'
+
+args = {
+	'use_tf32': True,
+	'scheduler_id': 'dpmpp_2m_sde_karras',
+	'do_tiling': width > 1024 or height > 1024,
+	'do_freeu': {
+		'b1': 1.1, 'b2': 1.2, 's1': 0.6, 's2': 0.4
+	}
+}
+base = load_pipeline(**args)
+
+image = base(
+	prompt=prompt,
+	num_inference_steps=n_steps,
+	width=width,
+	height=height,
+).images[0]
+
+image.save('test.png')
+
+
 chkpt:
 	The HuggingFace model ID or model path to use. If the former it will be
 	downloaded relative to `cache_dir`. Defaults to `stabilityai/stable-diffusion-xl-base-1.0`.
@@ -263,7 +302,7 @@ def load_pipeline(
 	flush()
 
 	# https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#enable-cudnn-auto-tuner
-	torch.backends.cudnn.benchmark = True
+	# torch.backends.cudnn.benchmark = True
 
 	if use_tf32:
 		# https://huggingface.co/docs/diffusers/optimization/fp16#use-tensorfloat32
@@ -296,6 +335,16 @@ def load_pipeline(
 		**uni_args
 	)
 
+	text_encoder_2 = CLIPTextModelWithProjection.from_pretrained(
+		'laion/CLIP-ViT-bigG-14-laion2B-39B-b160k',
+		**uni_args
+	)
+
+	tokenizer_2 = CLIPTokenizer.from_pretrained(
+		'laion/CLIP-ViT-bigG-14-laion2B-39B-b160k',
+		**uni_args
+	)
+
 	scheduler = get_scheduler({
 		'pretrained_model_name_or_path': chkpt,
 		'cache_dir': cache_dir,
@@ -308,6 +357,8 @@ def load_pipeline(
 	pipe = StableDiffusionXLPipeline.from_pretrained(
 		scheduler=scheduler,
 		text_encoder=text_encoder,
+		text_encoder_2=text_encoder_2,
+		tokenizer_2=tokenizer_2,
 		use_safetensors=True,
 		custom_pipeline=pipeline,
 		**model_args
@@ -399,5 +450,5 @@ def load_pipeline(
 	if device == 'cuda':
 		log_gpu_cache()
 
-	pipe.set_progress_bar_config(disable=True)
+	#pipe.set_progress_bar_config(disable=True)
 	return pipe
