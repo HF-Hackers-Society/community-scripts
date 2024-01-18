@@ -25,8 +25,10 @@ from transformers import (
 )
 
 
-HAS_LINUX = platform.system().lower() == 'linux'
+# https://huggingface.co/docs/diffusers/v0.25.0/en/using-diffusers/sdxl#optimizations
+HAS_LINUX = platform.system().lower() == 'linux' and torch.__version__ >= '2.0.0'
 CAN_QUANT = torch.__version__ >= '2.3.0' and HAS_LINUX
+GPU_MODEL = torch.cuda.get_device_properties(0).name
 
 
 if CAN_QUANT:
@@ -221,7 +223,8 @@ compile_mode:
 	to `max-autotune`.
 use_tf32:
 	Whether to use TensorFloat32 precision. It's roughly equal to FP16 performance
-	at FP32 precision. It provides free performance improvements on RTX NVIDIA GPUs.
+	at FP32 precision. It provides free performance improvements on RTX 3K+ NVIDIA GPUs.
+	On supported GPUs it's automatically enabled.
 no_bf16:
 	If True, FP16 is enabled. If False, BFP16 is enabled.
 upcast_vae:
@@ -284,7 +287,7 @@ def load_pipeline(
 	compile_unet: bool = HAS_LINUX,
 	compile_vae: bool = HAS_LINUX,
 	compile_mode: str = 'max-autotune' if CAN_QUANT else 'reduce-overhead',
-	use_tf32: bool = False, # Faster but slightly less accurate
+	use_tf32: bool = 'RTX' in GPU_MODEL and '20' not in GPU_MODEL,
 	no_bf16: bool = True,
 	upcast_vae: bool = True,
 	fuse_projections: bool = True,
