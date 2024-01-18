@@ -21,7 +21,20 @@ poetry update
 
 The major disadvantage to Anaconda is that many times the packages on its repos are outdated compared to present Pip versions. This leads many developers to prefer Pipenv or Poetry. However, in this case, managing PyTorch against multiple platforms is a major pain if you've ever tried to manage it with Poetry. And Anaconda handles PyTorch seamlessly. For all Pip dependencies, Poetry handles the rest, which gives us the best of all worlds!
 
-### Windows 10
+### Configuration
+
+After completing the steps below for your respective platform, run the following:
+
+```
+# Be sure you're in the "base" env!
+mamba create -n hf --file conda-win-64.lock
+conda activate hf
+poetry env use python
+poetry install
+accelerate config
+```
+
+#### Windows
 
 Install the latest available NVIDIA driver, then run `nvidia-smi` and verify the supported CUDA version is equal to or greater than the highest requirement!
 
@@ -44,26 +57,11 @@ Install the following:
 scoop bucket add extras
 scoop install rust mambaforge
 mamba update mamba --all
-# Be sure you're in the "base" env!
-mamba create -n hf --file conda-win-64.lock
-conda activate hf
-poetry env use python
-poetry install
-accelerate config
 ```
 
-### Linux
+#### Linux
 
-*Install build-essential, NVIDIA drivers, cudatoolkit, libsndfile1-dev, libgl1, and mamba!*
-
-```
-# Be sure you're in the "base" env!
-mamba create --name hf --file conda-linux-64.lock
-conda activate hf
-poetry env use python
-poetry install
-accelerate config
-```
+Install `build-essential`, `cudatoolkit`, the latest compatible NVIDIA driver, `libsndfile1-dev`, `libgl1`, and `mamba`!
 
 ### Accelerate Config Example
 
