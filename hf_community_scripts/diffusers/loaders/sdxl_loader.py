@@ -296,6 +296,7 @@ def load_pipeline(
 	scheduler_id: str = 'euler',
 	do_freeu: Dict[str, float] = None,
 	do_tiling: bool = False,
+	nn_benchmark: bool = False,
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
 		raise ValueError('Compilation for UNet must be enabled when quantizing.')
@@ -305,7 +306,7 @@ def load_pipeline(
 	flush()
 
 	# https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#enable-cudnn-auto-tuner
-	# torch.backends.cudnn.benchmark = True
+	torch.backends.cudnn.benchmark = nn_benchmark
 
 	if use_tf32:
 		# https://huggingface.co/docs/diffusers/optimization/fp16#use-tensorfloat32
