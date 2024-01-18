@@ -161,7 +161,7 @@ def get_scheduler(model_args: Dict[str, str], scheduler_id: str):
 
 
 """
-load_pipeline
+load_single_gpu_pipeline
 
 Sends a model to a device automatically based on whether the required
 GPU technologies are available.
@@ -171,7 +171,7 @@ EXAMPLES
 
 1) Simple init
 
-pipe = load_pipeline()
+pipe = load_single_gpu_pipeline()
 
 2) Recommended settings
 
@@ -189,7 +189,7 @@ args = {
 		'b1': 1.1, 'b2': 1.2, 's1': 0.6, 's2': 0.4
 	}
 }
-base = load_pipeline(**args)
+base = load_single_gpu_pipeline(**args)
 
 image = base(
 	prompt=prompt,
@@ -280,7 +280,7 @@ do_tiling:
 	Toggles VAE tiling, which improves performance when generating highres images beyond
 	the default 1024x1024 resolution.
 """
-def load_pipeline(
+def load_single_gpu_pipeline(
 	chkpt: str = 'stabilityai/stable-diffusion-xl-base-1.0',
 	cache_dir: str = 'downloads/',
 	do_quant: str = 'int8dynamic' if CAN_QUANT else None,
