@@ -182,7 +182,6 @@ n_steps = 50
 prompt = 'A majestic lion leaping from a big stone at night.'
 
 args = {
-	'use_tf32': True,
 	'scheduler_id': 'dpmpp_2m_sde_karras',
 	'do_tiling': width > 1024 or height > 1024,
 	'do_freeu': {
@@ -305,17 +304,18 @@ def load_single_gpu_pipeline(
 
 	flush()
 
+	device, dtype = load_torch(no_bf16)
+	print(f'Using dtype: {dtype}')
+
 	# https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#enable-cudnn-auto-tuner
 	torch.backends.cudnn.benchmark = nn_benchmark
 
 	if use_tf32:
+		print('Enabling TensorFloat32 precision.')
 		# https://huggingface.co/docs/diffusers/optimization/fp16#use-tensorfloat32
 		# https://huggingface.co/docs/transformers/en/perf_train_gpu_one#tf32
 		torch.backends.cuda.matmul.allow_tf32 = True
 		torch.backends.cudnn.allow_tf32 = True
-
-	device, dtype = load_torch(no_bf16)
-	print(f'Using dtype: {dtype}')
 
 	uni_args = {
 		'cache_dir': cache_dir,
@@ -327,11 +327,11 @@ def load_single_gpu_pipeline(
 		**uni_args
 	}
 
-	pipeline = cached_download(
-		url='https://raw.githubusercontent.com/huggingface/diffusers/main/examples/community/lpw_stable_diffusion_xl.py',
-		cache_dir=cache_dir,
-		force_filename='lpw_stable_diffusion_xl.py'
-	)
+	# pipeline = cached_download(
+	# 	url='https://raw.githubusercontent.com/huggingface/diffusers/main/examples/community/lpw_stable_diffusion_xl.py',
+	# 	cache_dir=cache_dir,
+	# 	force_filename='lpw_stable_diffusion_xl.py'
+	# )
 
 	# 'clip-vit-large-patch14' is older!
 	text_encoder = CLIPTextModel.from_pretrained(
@@ -364,7 +364,7 @@ def load_single_gpu_pipeline(
 		text_encoder_2=text_encoder_2,
 		tokenizer_2=tokenizer_2,
 		use_safetensors=True,
-		custom_pipeline=pipeline,
+		#custom_pipeline=pipeline,
 		**model_args
 	)
 
