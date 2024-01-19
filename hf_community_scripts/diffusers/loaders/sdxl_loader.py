@@ -23,6 +23,7 @@ from transformers import (
 	CLIPTokenizer,
 	CLIPTextModelWithProjection
 )
+import tomesd
 
 
 # https://huggingface.co/docs/diffusers/v0.25.0/en/using-diffusers/sdxl#optimizations
@@ -278,6 +279,10 @@ do_freeu:
 do_tiling:
 	Toggles VAE tiling, which improves performance when generating highres images beyond
 	the default 1024x1024 resolution.
+nn_benchmark:
+	Toggles the CudaNN benchmarking. Do not enable this on production pipelines.
+merge_tokens:
+	If greater then zero, enables token merging at the designated ratio.
 """
 def load_single_gpu_pipeline(
 	chkpt: str = 'stabilityai/stable-diffusion-xl-base-1.0',
@@ -296,6 +301,7 @@ def load_single_gpu_pipeline(
 	do_freeu: Dict[str, float] = None,
 	do_tiling: bool = False,
 	nn_benchmark: bool = False,
+	merge_tokens: float = 0.5,
 ) -> StableDiffusionXLPipeline:
 	if do_quant and not compile_unet:
 		raise ValueError('Compilation for UNet must be enabled when quantizing.')
@@ -311,11 +317,11 @@ def load_single_gpu_pipeline(
 	torch.backends.cudnn.benchmark = nn_benchmark
 
 	if use_tf32:
-		print('Enabling TensorFloat32 precision.')
 		# https://huggingface.co/docs/diffusers/optimization/fp16#use-tensorfloat32
 		# https://huggingface.co/docs/transformers/en/perf_train_gpu_one#tf32
 		torch.backends.cuda.matmul.allow_tf32 = True
 		torch.backends.cudnn.allow_tf32 = True
+		print('Enabled TensorFloat32 precision.')
 
 	uni_args = {
 		'cache_dir': cache_dir,
@@ -335,6 +341,11 @@ def load_single_gpu_pipeline(
 
 	# 'clip-vit-large-patch14' is older!
 	text_encoder = CLIPTextModel.from_pretrained(
+		'openai/clip-vit-large-patch14-336',
+		**uni_args
+	)
+
+	tokenizer = CLIPTokenizer.from_pretrained(
 		'openai/clip-vit-large-patch14-336',
 		**uni_args
 	)
@@ -361,6 +372,7 @@ def load_single_gpu_pipeline(
 	pipe = StableDiffusionXLPipeline.from_pretrained(
 		scheduler=scheduler,
 		text_encoder=text_encoder,
+		tokenizer=tokenizer,
 		text_encoder_2=text_encoder_2,
 		tokenizer_2=tokenizer_2,
 		use_safetensors=True,
@@ -396,6 +408,10 @@ def load_single_gpu_pipeline(
 
 	pipe = pipe.to(device)
 
+	# https://huggingface.co/docs/diffusers/optimization/tome#token-merging
+	if merge_tokens > 0.0:
+		tomesd.apply_patch(pipe, ratio=merge_tokens)
+
 	# 'diffusers-fast' sends the pipe to the device after setting everything below in its runner,
 	# however the docs do it before all the changes (and doing it before is significantly faster)
 	# https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#avoid-unnecessary-cpu-gpu-synchronization
@@ -408,8 +424,8 @@ def load_single_gpu_pipeline(
 		)
 
 	if fuse_projections:
-		print('Enabling fused QKV projections for both UNet and VAE.')
 		pipe.fuse_qkv_projections()
+		print('Fused QKV projections for both UNet and VAE.')
 
 	if do_tiling:
 		pipe.enable_vae_tiling()
@@ -420,9 +436,9 @@ def load_single_gpu_pipeline(
 	# https://huggingface.co/docs/diffusers/main/en/optimization/memory#channels-last-memory-format
 	# https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#enable-channels-last-memory-format-for-computer-vision-models
 	if pipe.unet.conv_out.state_dict()['weight'].stride()[3] == 1:
-		print('Flipping memory format for both UNet and VAE.')
 		pipe.unet.to(memory_format=torch.channels_last)
 		pipe.vae.to(memory_format=torch.channels_last)
+		print('Flipped memory format for both UNet and VAE.')
 
 	if compile_mode == 'max-autotune' and (compile_unet or compile_vae):
 		torch._inductor.config.conv_1x1_as_mm = True
